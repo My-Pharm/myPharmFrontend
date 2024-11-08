@@ -9,6 +9,7 @@ import ChechkMedicines from "./pages/LongChechkMedicines";
 import ShortTermMedicine from "./pages/ShortSelect";
 import LongChechkMedicines from "./pages/LongChechkMedicines";
 import ShortChechkMedicines from "./pages/ShortCheckMedicines";
+import Header from "./components/Header";
 function App() {
   function setScreenSize() {
     let vh = window.innerHeight * 0.01;
@@ -19,6 +20,7 @@ function App() {
   });
   return (
     <BrowserRouter>
+      {/* <Header /> */}
       <Routes>
         <Route path="/" element={<Main />} />
         <Route path="/select-type" element={<SelectType />} />

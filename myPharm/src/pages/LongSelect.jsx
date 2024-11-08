@@ -1,25 +1,27 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { ko } from "date-fns/locale";
 import "../styles/datepicker.css";
 import { Button } from "../components/ui/button";
+import Header from "../components/Header";
+import MedRef from "../components/ui/MedRefLong.jsx";
 
 export default function LongTermMedicine() {
-  const [data, setData] = useState([]); //데이터 저장할곳
+  // const [data, setData] = useState([]); //데이터 저장할곳
   const [searchText, setSearchText] = useState(""); //검색어
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [savedMedicines, setSavedMedicines] = useState([]);
-  const [searchResults, setSearchResults] = useState([]);
+  const [searchResults, setSearchResults] = useState([]); //검색결과저장
   const [allMedicines] = useState([
-    { id: 1, name: "타이레놀", dosage: "500mg", period: "1일 3회" },
-    { id: 2, name: "아스피린", dosage: "300mg", period: "1일 2회" },
-    { id: 3, name: "부루펜", dosage: "200mg", period: "1일 3회" },
-    { id: 4, name: "게보린", dosage: "300mg", period: "1일 2회" },
-    { id: 5, name: "판콜에이", dosage: "400mg", period: "1일 3회" },
-    { id: 6, name: "아스피린2", dosage: "300mg", period: "1일 2회" },
+    { id: 1, name: "타이레놀" },
+    { id: 2, name: "아스피린" },
+    { id: 3, name: "부루펜" },
+    { id: 4, name: "게보린" },
+    { id: 5, name: "판콜에이" },
+    { id: 6, name: "아스피린2" },
   ]);
   const [selectedMedicines, setSelectedMedicines] = useState([]);
   const navigate = useNavigate();
@@ -35,17 +37,42 @@ export default function LongTermMedicine() {
     }
   };
 
+  const handleResultClick = (medicineName) => {
+    setSearchText(medicineName);
+    setSearchResults([]);
+
+    const selectedMedicine = allMedicines.find(
+      (medicine) => medicine.name === medicineName
+    );
+    if (selectedMedicine) {
+      handleCheckboxChange(selectedMedicine);
+    }
+  };
+
   const handleSave = () => {
+    console.log("savedMedicine");
+    console.log(selectedMedicines);
+
     if (selectedMedicines.length > 0) {
       const medicinesWithDates = selectedMedicines.map((medicine) => ({
         ...medicine,
         startDate: startDate,
         endDate: endDate,
       }));
-      setSavedMedicines([...savedMedicines, ...medicinesWithDates]);
-      // setSearchResults([]);
+      const newMedicine = {
+        name: searchText,
+        startDate: startDate,
+        endDate: endDate,
+      };
+
+      setSavedMedicines([
+        ...savedMedicines,
+        // newMedicine,
+        ...medicinesWithDates,
+      ]);
       setSearchText("");
       setSelectedMedicines([]);
+      console.log(savedMedicines);
     }
   };
 
@@ -60,10 +87,9 @@ export default function LongTermMedicine() {
     });
   };
 
-  useEffect(() => {}, [{}]);
-
   return (
     <div className="min-h-screen bg-gray-50 p-4" style={{}}>
+      <Header />
       {/* 검색 섹션 */}
       <section style={{ marginBottom: "24px" }}>
         <div
@@ -93,7 +119,7 @@ export default function LongTermMedicine() {
             onClick={handleSearch}
             style={{
               padding: "12px 24px",
-              backgroundColor: "#3b82f6",
+              backgroundColor: "#12273d",
               color: "white",
               border: "none",
               borderRadius: "8px",
@@ -108,37 +134,6 @@ export default function LongTermMedicine() {
           </button>
         </div>
 
-        {/* 달력 선택 */}
-        <div className="calendar-container">
-          <div className="calendar-wrapper">
-            <p className="mb-2 text-sm text-gray-600">시작</p>
-            <DatePicker
-              selected={startDate}
-              onChange={(date) => setStartDate(date)}
-              selectsStart
-              startDate={startDate}
-              endDate={endDate}
-              locale={ko}
-              dateFormat="yyyy년 MM월 dd일"
-              inline
-            />
-          </div>
-          <div className="calendar-wrapper">
-            <p className="mb-2 text-sm text-gray-600">끝</p>
-            <DatePicker
-              selected={endDate}
-              onChange={(date) => setEndDate(date)}
-              selectsEnd
-              startDate={startDate}
-              endDate={endDate}
-              minDate={startDate}
-              locale={ko}
-              dateFormat="yyyy년 MM월 dd일"
-              inline
-            />
-          </div>
-        </div>
-
         {/* 검색 결과 및 저장 버튼 */}
         {searchResults.length > 0 && (
           <div className="mb-4">
@@ -146,17 +141,9 @@ export default function LongTermMedicine() {
               {searchResults.map((medicine) => (
                 <div
                   key={medicine.id}
-                  className="mb-2 p-2 border-b last:border-b-0"
+                  className="mb-2 p-2 border-b last:border-b-0 cursor-pointer"
+                  onClick={() => handleResultClick(medicine.name)}
                 >
-                  {" "}
-                  <input
-                    type="checkbox"
-                    checked={selectedMedicines.some(
-                      (item) => item.id === medicine.id
-                    )}
-                    onChange={() => handleCheckboxChange(medicine)}
-                    className="mr-3 w-4 h-4"
-                  />
                   <h3 className="font-bold">{medicine.name}</h3>
                   <p className="text-sm text-gray-600">
                     {medicine.dosage} - {medicine.period}
@@ -164,30 +151,63 @@ export default function LongTermMedicine() {
                 </div>
               ))}
             </div>
-            <button
-              onClick={handleSave}
-              className="w-full p-3 bg-green-500 text-white rounded-lg"
-              disabled={selectedMedicines.length === 0}
-            >
-              저장하기
-            </button>
           </div>
         )}
       </section>
-
-      {/* 저장된 약 목록 */}
+      {/* 달력 선택 */}
+      <div className="calendar-container">
+        <div className="calendar-wrapper">
+          <p className="mb-2 text-sm text-gray-600">시작</p>
+          <DatePicker
+            selected={startDate}
+            onChange={(date) => setStartDate(date)}
+            selectsStart
+            startDate={startDate}
+            endDate={endDate}
+            locale={ko}
+            dateFormat="yyyy년 MM월 dd일"
+            inline
+          />
+        </div>
+        <div className="calendar-wrapper">
+          <p className="mb-2 text-sm text-gray-600">끝</p>
+          <DatePicker
+            selected={endDate}
+            onChange={(date) => setEndDate(date)}
+            selectsEnd
+            startDate={startDate}
+            endDate={endDate}
+            minDate={startDate}
+            locale={ko}
+            dateFormat="yyyy년 MM월 dd일"
+            inline
+          />
+        </div>
+      </div>
+      <button
+        onClick={() => {
+          console.log("AB");
+          handleSave();
+        }}
+        className="w-full p-3 bg-green-500 text-white rounded-lg"
+        // disabled={selectedMedicines.length === 0}
+      >
+        저장하기
+      </button>
+      {/* 
       <section className="mb-20">
-        {" "}
-        {/* 하단 버튼을 위한 여백 */}
         <h2 className="text-lg font-bold mb-3">저장된 약 목록</h2>
         <div className="bg-white rounded-lg shadow">
           {savedMedicines.length > 0 ? (
-            savedMedicines.map((medicine) => (
-              <div key={medicine.id} className="p-4 border-b last:border-b-0">
+            savedMedicines.map((medicine, index) => (
+              <div key={index} className="p-4 border-b last:border-b-0">
                 <h3 className="font-bold">{medicine.name}</h3>
                 <p className="text-xs text-gray-500 mt-1">
                   {medicine.startDate.toLocaleDateString("ko-KR")} ~{" "}
                   {medicine.endDate.toLocaleDateString("ko-KR")}
+                </p>
+                <p className="text-xs text-gray-500 mt-1">
+                  용량: {medicine.dosage}
                 </p>
               </div>
             ))
@@ -197,8 +217,9 @@ export default function LongTermMedicine() {
             </p>
           )}
         </div>
-      </section>
+      </section> */}
 
+      <MedRef savedMedicines={savedMedicines} />
       {/* 검사하기 버튼 */}
       <button
         onClick={() => navigate("/long-check-medicines")}
