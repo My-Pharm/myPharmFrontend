@@ -21,9 +21,7 @@ export default function SelectType() {
           이거 같이 먹어도 되나요(단발)
         </button>
         <button
-          onClick={() =>
-            navigate("/medicine-list", { state: { type: "long" } })
-          }
+          onClick={() => navigate("/long-select", { state: { type: "long" } })}
           className="w-48 px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
         >
           장기

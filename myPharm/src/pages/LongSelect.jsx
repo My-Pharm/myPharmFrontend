@@ -159,7 +159,7 @@ export default function LongTermMedicine() {
 
       {/* 검사하기 버튼 */}
       <button
-        onClick={() => navigate("/check-medicines")}
+        onClick={() => navigate("/long-check-medicines")}
         className="w-full p-4 bg-blue-600 text-white rounded-lg fixed bottom-4 left-0 mx-4 max-w-[calc(100%-32px)]"
       >
         검사하기
