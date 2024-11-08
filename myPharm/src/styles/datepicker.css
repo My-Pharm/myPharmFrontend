@@ -1,0 +1,54 @@
+.calendar-container {
+    display: flex;
+    gap: 1rem;  /* 간격 줄임 */
+    justify-content: space-between;
+    margin: 1rem 0;
+  }
+  
+  .calendar-wrapper {
+    flex: 1;
+  }
+  
+  /* DatePicker 크기 조절 */
+  .react-datepicker {
+    font-size: 0.8rem !important;  /* 전체 폰트 크기 축소 */
+  }
+  
+  .react-datepicker__month-container {
+    width: 100% !important;
+  }
+  
+  .react-datepicker__header {
+    padding-top: 0.5rem !important;
+  }
+  
+  .react-datepicker__month {
+    margin: 0 !important;
+    padding: 0.2rem !important;
+  }
+  
+  .react-datepicker__day {
+    width: 1.5rem !important;  /* 날짜 칸 너비 축소 */
+    line-height: 1.5rem !important;  /* 날짜 칸 높이 축소 */
+    margin: 0.1rem !important;  /* 날짜 간 간격 축소 */
+  }
+  
+  .react-datepicker__day-name {
+    width: 1.5rem !important;  /* 요일 칸 너비 축소 */
+    line-height: 1.5rem !important;  /* 요일 칸 높이 축소 */
+    margin: 0.1rem !important;  /* 요일 간 간격 축소 */
+  }
+  
+  /* 모바일 화면에서 더 작게 조정 */
+  @media (max-width: 640px) {
+    .react-datepicker {
+      font-size: 0.7rem !important;
+    }
+    
+    .react-datepicker__day,
+    .react-datepicker__day-name {
+      width: 1.3rem !important;
+      line-height: 1.3rem !important;
+      margin: 0.1rem !important;
+    }
+  }
