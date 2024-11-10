@@ -324,7 +324,7 @@ export default function LongTermMedicine() {
       <button
         onClick={handleSave}
         disabled={selectedMedicines.length === 0 || isSaving}
-        className="w-full p-3 bg-green-500 text-white rounded-lg disabled:bg-gray-400 mb-6"
+        className="w-full p-3 bg-green-500 text-white rounded-lg disabled:bg-gray-400 mb-6 rounded-lg"
       >
         저장하기
       </button>
@@ -334,7 +334,7 @@ export default function LongTermMedicine() {
       </div>
       <button
         onClick={() => navigate("/long-check-medicines")}
-        className="w-full p-4 bg-blue-600 text-white rounded-lg fixed bottom-4 left-0 mx-4 max-w-[calc(100%-32px)]"
+        className="w-full p-3 bg-blue-600 text-white rounded-lg fixed bottom-4 left-0 mx-4 max-w-[calc(100%-32px)]"
       >
         검사하기
       </button>
