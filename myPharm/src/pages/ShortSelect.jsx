@@ -1,3 +1,4 @@
+// ShortTermMedicine.jsx
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DatePicker from "react-datepicker";
@@ -128,6 +129,47 @@ export default function ShortTermMedicine() {
     handleCheckboxChange(medicine);
   };
 
+  // 약품 삭제 처리 함수
+  const handleDelete = async (medicine) => {
+    // 새로 추가된 약품인지 확인 (startDate와 endDate가 있으면 저장된 약품)
+    const isNewMedicine = !medicine.startDate || !medicine.endDate;
+
+    if (isNewMedicine) {
+      // 새로 추가된 약품은 화면에서만 제거
+      setSelectedMedicines((prev) =>
+        prev.filter((item) => item.name !== medicine.medicineName)
+      );
+    } else {
+      // 저장된 약품은 API 호출하여 삭제
+      try {
+        const response = await fetch(
+          `${API_BASE_URL}/medbox/delete?medicineName=${encodeURIComponent(
+            medicine.medicineName
+          )}`,
+          {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${ACCESS_TOKEN}`,
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`삭제 실패: ${response.status}`);
+        }
+
+        // 성공적으로 삭제되면 상태 업데이트
+        setSavedMedicines((prev) =>
+          prev.filter((item) => item.medicineName !== medicine.medicineName)
+        );
+      } catch (err) {
+        console.error("Delete error:", err);
+        setError("삭제 중 오류가 발생했습니다");
+      }
+    }
+  };
+
   const handleSave = () => {
     if (selectedMedicines.length > 0) {
       const currentDateTime = new Date();
@@ -240,17 +282,25 @@ export default function ShortTermMedicine() {
       </section>
 
       <button
-        onClick={() => {
-          handleSave();
-        }}
+        onClick={handleSave}
         className="w-full p-3 bg-green-500 text-white rounded-lg"
-        // disabled={selectedMedicines.length === 0}
       >
         저장하기
       </button>
+
       <div style={{ maxHeight: "300px", overflowY: "auto" }} className="mb-20">
-        <MedRefShort savedMedicines={savedMedicines} />
+        <MedRefShort
+          savedMedicines={[
+            ...savedMedicines,
+            ...selectedMedicines.map((medicine) => ({
+              medicineName: medicine.name,
+              isNew: true, // 새로 추가된 약품 표시
+            })),
+          ]}
+          onDelete={handleDelete}
+        />
       </div>
+
       {/* 검사하기 버튼 */}
       <button
         onClick={() =>
