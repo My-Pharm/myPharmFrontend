@@ -1,4 +1,3 @@
-// ShortTermMedicine.jsx
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DatePicker from "react-datepicker";
@@ -15,15 +14,14 @@ const ACCESS_TOKEN =
   "eyJ0eXBlIjoiYWNjZXNzIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjM3ODUyNTY0NjksImlhdCI6MTczMTE3MTY1OSwiZXhwIjoxNzMxNzc2NDU5fQ.HjXkr1XHjQbMgc2Sqjv1m6J94NjUO88vPlOJGkrYXDM";
 
 export default function ShortTermMedicine() {
-  const [searchText, setSearchText] = useState(""); //검색어
+  const [searchText, setSearchText] = useState("");
   const [savedMedicines, setSavedMedicines] = useState([]);
-  const [searchResults, setSearchResults] = useState([]); //검색결과저장
+  const [searchResults, setSearchResults] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [selectedMedicines, setSelectedMedicines] = useState([]);
   const navigate = useNavigate();
 
-  // 저장된 약품 목록 가져오기
   useEffect(() => {
     const fetchSavedMedicines = async () => {
       try {
@@ -52,7 +50,6 @@ export default function ShortTermMedicine() {
     fetchSavedMedicines();
   }, []);
 
-  // 약품 검색 API 호출 함수
   const searchMedicines = async (searchText) => {
     if (!searchText.trim()) {
       setError("검색어를 입력해주세요");
@@ -86,7 +83,6 @@ export default function ShortTermMedicine() {
       const data = await response.json();
       console.log("API Response:", data);
 
-      // API 응답 형식에 따라 데이터 처리
       let formattedResults;
       if (Array.isArray(data)) {
         formattedResults = data.map((item, index) => ({
@@ -129,44 +125,46 @@ export default function ShortTermMedicine() {
     handleCheckboxChange(medicine);
   };
 
-  // 약품 삭제 처리 함수
-  const handleDelete = async (medicine) => {
-    // 새로 추가된 약품인지 확인 (startDate와 endDate가 있으면 저장된 약품)
-    const isNewMedicine = !medicine.startDate || !medicine.endDate;
-
-    if (isNewMedicine) {
-      // 새로 추가된 약품은 화면에서만 제거
+  // 수정된 handleDelete 함수
+  const handleDelete = (medicine) => {
+    if (medicine.isNew) {
+      // 새로 추가된 약품(단기 복용)은 화면에서만 제거
       setSelectedMedicines((prev) =>
         prev.filter((item) => item.name !== medicine.medicineName)
       );
+      setSavedMedicines((prev) =>
+        prev.filter((item) => item.medicineName !== medicine.medicineName)
+      );
     } else {
-      // 저장된 약품은 API 호출하여 삭제
-      try {
-        const response = await fetch(
-          `${API_BASE_URL}/medbox/delete?medicineName=${encodeURIComponent(
-            medicine.medicineName
-          )}`,
-          {
-            method: "DELETE",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${ACCESS_TOKEN}`,
-            },
+      // 기존 저장된 약품은 DB에서 삭제
+      const deleteFromDB = async () => {
+        try {
+          const response = await fetch(
+            `${API_BASE_URL}/medbox/delete?medicineName=${encodeURIComponent(
+              medicine.medicineName
+            )}`,
+            {
+              method: "DELETE",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${ACCESS_TOKEN}`,
+              },
+            }
+          );
+
+          if (!response.ok) {
+            throw new Error(`삭제 실패: ${response.status}`);
           }
-        );
 
-        if (!response.ok) {
-          throw new Error(`삭제 실패: ${response.status}`);
+          setSavedMedicines((prev) =>
+            prev.filter((item) => item.medicineName !== medicine.medicineName)
+          );
+        } catch (err) {
+          console.error("Delete error:", err);
+          setError("삭제 중 오류가 발생했습니다");
         }
-
-        // 성공적으로 삭제되면 상태 업데이트
-        setSavedMedicines((prev) =>
-          prev.filter((item) => item.medicineName !== medicine.medicineName)
-        );
-      } catch (err) {
-        console.error("Delete error:", err);
-        setError("삭제 중 오류가 발생했습니다");
-      }
+      };
+      deleteFromDB();
     }
   };
 
@@ -180,6 +178,7 @@ export default function ShortTermMedicine() {
           medicineName: name,
           startDate: currentDateTime.toISOString(),
           endDate: currentDateTime.toISOString(),
+          isNew: true, // 새로 추가된 약품임을 표시
         };
       });
       console.log("Medicines with dates:", medicinesWithDates);
@@ -208,7 +207,6 @@ export default function ShortTermMedicine() {
   return (
     <div className="min-h-screen bg-gray-50 p-4" style={{}}>
       <Header />
-      {/* 검색 섹션 */}
       <section style={{ marginBottom: "24px" }}>
         <div
           style={{
@@ -252,8 +250,6 @@ export default function ShortTermMedicine() {
           </button>
         </div>
 
-        {/* 검색 결과 및 저장 버튼 */}
-        {/* 검색 결과 표시 */}
         {isLoading ? (
           <div className="text-center p-4">검색 중...</div>
         ) : (
@@ -294,14 +290,13 @@ export default function ShortTermMedicine() {
             ...savedMedicines,
             ...selectedMedicines.map((medicine) => ({
               medicineName: medicine.name,
-              isNew: true, // 새로 추가된 약품 표시
+              isNew: true,
             })),
           ]}
           onDelete={handleDelete}
         />
       </div>
 
-      {/* 검사하기 버튼 */}
       <button
         onClick={() =>
           navigate("/short-check-medicines", {

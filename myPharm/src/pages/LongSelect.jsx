@@ -172,7 +172,33 @@ export default function LongTermMedicine() {
       setIsSaving(false);
     }
   };
+  const deleteMedicine = async (medicine) => {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/medbox/delete?medicineName=${encodeURIComponent(
+          medicine.medicineName
+        )}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${ACCESS_TOKEN}`,
+          },
+        }
+      );
 
+      if (!response.ok) {
+        throw new Error("약품 삭제에 실패했습니다.");
+      }
+
+      // 성공적으로 삭제되면 목록에서도 제거
+      setSavedMedicines((prev) =>
+        prev.filter((item) => item.medicineName !== medicine.medicineName)
+      );
+    } catch (err) {
+      console.error("Delete error:", err);
+      setError("약품 삭제 중 오류가 발생했습니다.");
+    }
+  };
   const handleCheckboxChange = (medicine) => {
     setSelectedMedicines((prev) => {
       const isSelected = prev.some((item) => item.name === medicine.name);
@@ -304,7 +330,7 @@ export default function LongTermMedicine() {
       </button>
 
       <div style={{ maxHeight: "300px", overflowY: "auto" }} className="mb-20">
-        <MedRef savedMedicines={savedMedicines} />
+        <MedRef savedMedicines={savedMedicines} onDelete={deleteMedicine} />
       </div>
       <button
         onClick={() => navigate("/long-check-medicines")}
