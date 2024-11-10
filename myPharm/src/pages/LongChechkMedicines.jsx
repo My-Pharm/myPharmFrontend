@@ -6,7 +6,7 @@ function LongCheckMedicines() {
   const [alerts, setAlerts] = useState({});
   const API_BASE_URL = "http://localhost:8080";
   const ACCESS_TOKEN = "eyJ0eXBlIjoiYWNjZXNzIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjM3ODUyNTY0NjksImlhdCI6MTczMTE3MTY1OSwiZXhwIjoxNzMxNzc2NDU5fQ.HjXkr1XHjQbMgc2Sqjv1m6J94NjUO88vPlOJGkrYXDM";
-
+  //const ACCESS_TOKEN = localStorage.getItem('accessToken');
   useEffect(() => {
     const fetchData = async () => {
       try {
