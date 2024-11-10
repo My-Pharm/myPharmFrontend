@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import "@fortawesome/fontawesome-free/css/all.min.css";
 
 export default function KakaoLogin() {
   const navigate = useNavigate();
@@ -34,7 +35,6 @@ export default function KakaoLogin() {
       window.Kakao.Auth.authorize({
         redirectUri: 'http://localhost:8080/login/auth'
       });
-      console.log("1번: 로그인 버튼 클릭");
     } else {
       console.error('Kakao SDK가 초기화되지 않았습니다.');
     }
@@ -46,7 +46,6 @@ export default function KakaoLogin() {
     const refreshToken = urlParams.get('refreshToken');
 
     if (accessToken && refreshToken) {
-      console.log("2번: 토큰이 감지되었습니다.");
       localStorage.setItem('accessToken', accessToken);
       localStorage.setItem('refreshToken', refreshToken);
 
@@ -61,9 +60,8 @@ export default function KakaoLogin() {
     backgroundColor: '#BFDBFE',
     color: '#374151',
     display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: '100vh',
+    flexDirection: 'column',
+    minHeight: '100vh',
   };
 
   const cardStyle = {
@@ -99,14 +97,48 @@ export default function KakaoLogin() {
 
   return (
     <div style={containerStyle}>
-      <div style={cardStyle}>
-        <h2 style={titleStyle}>[ 로그인 ]</h2>
-        <button 
-          onClick={handleKakaoLogin}
-          style={buttonStyle}
-        />
+      <header
+        style={{
+          backgroundColor: "#ffffff",
+          boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+          padding: "16px",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <span style={{ fontSize: "18px", fontWeight: "bold" }}>
+          로그인이 필요한 서비스입니다!
+        </span>
+        <button
+          style={{
+            padding: "8px",
+            borderRadius: "50%",
+            cursor: "pointer",
+            backgroundColor: "#f9f9f9",
+            border: "none",
+          }}
+        >
+          <i className="fas fa-list" style={{ color: "#333" }}></i>
+        </button>
+      </header>
+
+      <div
+        style={{
+          flexGrow: "1",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <div style={cardStyle}>
+          <h2 style={titleStyle}>[ 로그인 ]</h2>
+          <button 
+            onClick={handleKakaoLogin}
+            style={buttonStyle}
+          />
+        </div>
       </div>
     </div>
   );
-  
 }
