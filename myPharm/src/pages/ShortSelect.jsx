@@ -106,13 +106,16 @@ export default function ShortTermMedicine() {
     if (selectedMedicines.length > 0) {
       const currentDateTime = new Date();
 
-      const medicinesWithDates = selectedMedicines.map((medicine) => ({
-        ...medicine,
-        startDate: currentDateTime.toISOString(),
-        endDate: currentDateTime.toISOString(),
-      }));
-      // console.log("Medicines with dates:", medicinesWithDates);
-      // console.log("Current saved medicines:", savedMedicines);
+      const medicinesWithDates = selectedMedicines.map((medicine) => {
+        const { id, name, ...rest } = medicine;
+        return {
+          medicineName: name,
+          startDate: currentDateTime.toISOString(),
+          endDate: currentDateTime.toISOString(),
+        };
+      });
+      console.log("Medicines with dates:", medicinesWithDates);
+      console.log("Current saved medicines:", savedMedicines);
 
       setSavedMedicines([...savedMedicines, ...medicinesWithDates]);
       setSearchText("");
