@@ -1,3 +1,4 @@
+// ShortTermMedicine.jsx
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DatePicker from "react-datepicker";
@@ -14,14 +15,42 @@ const ACCESS_TOKEN =
   "eyJ0eXBlIjoiYWNjZXNzIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjM3ODUyNTY0NjksImlhdCI6MTczMTE3MTY1OSwiZXhwIjoxNzMxNzc2NDU5fQ.HjXkr1XHjQbMgc2Sqjv1m6J94NjUO88vPlOJGkrYXDM";
 
 export default function ShortTermMedicine() {
-  // const [data, setData] = useState([]); //데이터 저장할곳
   const [searchText, setSearchText] = useState(""); //검색어
-  //   const [startDate, setStartDate] = useState(new Date());
-  //   const [endDate, setEndDate] = useState(new Date());
   const [savedMedicines, setSavedMedicines] = useState([]);
   const [searchResults, setSearchResults] = useState([]); //검색결과저장
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [selectedMedicines, setSelectedMedicines] = useState([]);
+  const navigate = useNavigate();
+
+  // 저장된 약품 목록 가져오기
+  useEffect(() => {
+    const fetchSavedMedicines = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/medbox/get`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            Authorization: `Bearer ${ACCESS_TOKEN}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(`API 오류: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log("Saved medicines from API:", data);
+        setSavedMedicines(data);
+      } catch (err) {
+        console.error("Error fetching saved medicines:", err);
+        setError(err.message);
+      }
+    };
+
+    fetchSavedMedicines();
+  }, []);
 
   // 약품 검색 API 호출 함수
   const searchMedicines = async (searchText) => {
@@ -88,8 +117,6 @@ export default function ShortTermMedicine() {
       setIsLoading(false);
     }
   };
-  const [selectedMedicines, setSelectedMedicines] = useState([]);
-  const navigate = useNavigate();
 
   const handleSearch = () => {
     searchMedicines(searchText);
@@ -100,6 +127,47 @@ export default function ShortTermMedicine() {
     setSearchText(medicine.name);
     setSearchResults([]);
     handleCheckboxChange(medicine);
+  };
+
+  // 약품 삭제 처리 함수
+  const handleDelete = async (medicine) => {
+    // 새로 추가된 약품인지 확인 (startDate와 endDate가 있으면 저장된 약품)
+    const isNewMedicine = !medicine.startDate || !medicine.endDate;
+
+    if (isNewMedicine) {
+      // 새로 추가된 약품은 화면에서만 제거
+      setSelectedMedicines((prev) =>
+        prev.filter((item) => item.name !== medicine.medicineName)
+      );
+    } else {
+      // 저장된 약품은 API 호출하여 삭제
+      try {
+        const response = await fetch(
+          `${API_BASE_URL}/medbox/delete?medicineName=${encodeURIComponent(
+            medicine.medicineName
+          )}`,
+          {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${ACCESS_TOKEN}`,
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`삭제 실패: ${response.status}`);
+        }
+
+        // 성공적으로 삭제되면 상태 업데이트
+        setSavedMedicines((prev) =>
+          prev.filter((item) => item.medicineName !== medicine.medicineName)
+        );
+      } catch (err) {
+        console.error("Delete error:", err);
+        setError("삭제 중 오류가 발생했습니다");
+      }
+    }
   };
 
   const handleSave = () => {
@@ -117,7 +185,10 @@ export default function ShortTermMedicine() {
       console.log("Medicines with dates:", medicinesWithDates);
       console.log("Current saved medicines:", savedMedicines);
 
-      setSavedMedicines([...savedMedicines, ...medicinesWithDates]);
+      setSavedMedicines((prevMedicines) => [
+        ...prevMedicines,
+        ...medicinesWithDates,
+      ]);
       setSearchText("");
       setSelectedMedicines([]);
     }
@@ -211,16 +282,25 @@ export default function ShortTermMedicine() {
       </section>
 
       <button
-        onClick={() => {
-          handleSave();
-        }}
+        onClick={handleSave}
         className="w-full p-3 bg-green-500 text-white rounded-lg"
-        // disabled={selectedMedicines.length === 0}
       >
         저장하기
       </button>
 
-      <MedRefShort savedMedicines={savedMedicines} />
+      <div style={{ maxHeight: "300px", overflowY: "auto" }} className="mb-20">
+        <MedRefShort
+          savedMedicines={[
+            ...savedMedicines,
+            ...selectedMedicines.map((medicine) => ({
+              medicineName: medicine.name,
+              isNew: true, // 새로 추가된 약품 표시
+            })),
+          ]}
+          onDelete={handleDelete}
+        />
+      </div>
+
       {/* 검사하기 버튼 */}
       <button
         onClick={() =>
