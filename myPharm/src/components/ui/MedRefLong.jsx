@@ -12,7 +12,7 @@ export default function MedRefLong({ savedMedicines }) {
   };
   return (
     <div className="mt-4">
-      <h3 className="text-lg font-semibold mb-2">저장된 약품 목록</h3>
+      <h3 className="text-lg font-semibold mb-2">내가 먹고 있는 약</h3>
       <div className="space-y-2">
         {savedMedicines.map((medicine, index) => (
           <div key={index} className="p-3 bg-white rounded-lg shadow">
