@@ -1,48 +1,98 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.css";
 import Table from "react-bootstrap/Table";
 
-function LongChechkMedicines() {
+function LongCheckMedicines() {
+  const [alerts, setAlerts] = useState({});
+  const API_BASE_URL = "http://localhost:8080";
+  const ACCESS_TOKEN = "eyJ0eXBlIjoiYWNjZXNzIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjM3ODUyNTY0NjksImlhdCI6MTczMTE3MTY1OSwiZXhwIjoxNzMxNzc2NDU5fQ.HjXkr1XHjQbMgc2Sqjv1m6J94NjUO88vPlOJGkrYXDM";
+  //const ACCESS_TOKEN = localStorage.getItem('accessToken');
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [response1, response2] = await Promise.all([
+          fetch(`${API_BASE_URL}/alert-check`, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+              Authorization: `Bearer ${ACCESS_TOKEN}`,
+            },
+          }),
+          fetch(`${API_BASE_URL}/interaction/check-all`, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+              Authorization: `Bearer ${ACCESS_TOKEN}`,
+            },
+          }),
+        ]);
+
+        if (response1.ok && response2.ok) {
+          const data1 = await response1.json();
+          const data2 = await response2.json();
+          const combinedData = [...data1, ...data2];
+
+          // Group data by typeName, and keep the entry with the longest contents if medicine_name and type_name are the same
+          const groupedAlerts = combinedData.reduce((acc, item) => {
+            const { typeName, medicineName, contents } = item;
+            const key = `${medicineName}-${typeName}`;
+
+            // Check if the medicine and typeName combination already exists
+            if (!acc[key] || acc[key].contents.length < contents.length) {
+              acc[key] = item; // Keep the entry with the longest contents
+            }
+            return acc;
+          }, {});
+
+          // Transform groupedAlerts back into the desired format, grouped by typeName
+          const formattedAlerts = Object.values(groupedAlerts).reduce((acc, item) => {
+            const { typeName } = item;
+            if (!acc[typeName]) {
+              acc[typeName] = [];
+            }
+            acc[typeName].push(item);
+            return acc;
+          }, {});
+
+          setAlerts(formattedAlerts);
+        } else {
+          console.error("Failed to fetch alerts:", response1.status, response2.status);
+        }
+      } catch (error) {
+        console.error("Error fetching alerts:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        height: "100vh",
-      }}
-    >
-      <Table bordered hover>
-        <thead>
-          <tr>
-            <th>결과</th>
-            <th>First Name</th>
-            <th>Last Name</th>
-            <th>Username</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>1</td>
-            <td>Mark</td>
-            <td>Otto</td>
-            <td>@mdo</td>
-          </tr>
-          <tr>
-            <td>2</td>
-            <td>Jacob</td>
-            <td>Thornton</td>
-            <td>@fat</td>
-          </tr>
-          <tr>
-            <td>3</td>
-            <td colSpan={2}>Larry the Bird</td>
-            <td>@twitter</td>
-          </tr>
-        </tbody>
-      </Table>
+    <div>
+      {Object.keys(alerts).map((type) => (
+        <div key={type} className="my-4">
+          <h4>{type}</h4>
+          <Table striped bordered hover>
+            <thead>
+              <tr>
+                <th>Medicine Name</th>
+                <th>Contents</th>
+              </tr>
+            </thead>
+            <tbody>
+              {alerts[type].map((alert, index) => (
+                <tr key={index}>
+                  <td>{alert.medicineName}</td>
+                  <td>{alert.contents}</td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </div>
+      ))}
     </div>
   );
 }
 
-export default LongChechkMedicines;
+export default LongCheckMedicines;
