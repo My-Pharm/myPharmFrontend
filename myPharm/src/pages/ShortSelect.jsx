@@ -8,6 +8,7 @@ import { Button } from "../components/ui/button";
 import Header from "../components/Header";
 import MedRef from "../components/ui/MedRefLong.jsx";
 import MedRefShort from "../components/ui/MedRefShort.jsx";
+import "../../src/index.css";
 
 const API_BASE_URL = "http://localhost:8080";
 const ACCESS_TOKEN =
@@ -279,7 +280,7 @@ export default function ShortTermMedicine() {
 
       <button
         onClick={handleSave}
-        className="w-full p-3 bg-green-500 text-white rounded-lg"
+        className="w-full p-3 bg-green-500 text-white rounded-lg rounded-lg"
       >
         저장하기
       </button>
@@ -303,7 +304,7 @@ export default function ShortTermMedicine() {
             state: { savedMedicines },
           })
         }
-        className="w-full p-4 bg-blue-600 text-white rounded-lg fixed bottom-4 left-0 mx-4 max-w-[calc(100%-32px)]"
+        className="w-full p-3 bg-blue-600 text-white rounded-lg fixed bottom-4 left-0 mx-4 max-w-[calc(100%-32px)]"
       >
         검사하기
       </button>
