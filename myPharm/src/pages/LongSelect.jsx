@@ -24,6 +24,35 @@ export default function LongTermMedicine() {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
+  // 저장된 약품 목록 가져오기
+  useEffect(() => {
+    const fetchSavedMedicines = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/medbox/get`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            Authorization: `Bearer ${ACCESS_TOKEN}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(`API 오류: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log("Saved medicines from API:", data);
+        setSavedMedicines(data);
+      } catch (err) {
+        console.error("Error fetching saved medicines:", err);
+        setError(err.message);
+      }
+    };
+
+    fetchSavedMedicines();
+  }, []);
+
   // 약품 검색 API 호출 함수
   const searchMedicines = async (searchText) => {
     if (!searchText.trim()) {
@@ -126,9 +155,9 @@ export default function LongTermMedicine() {
       }
 
       const medicinesWithDates = selectedMedicines.map((medicine) => ({
-        name: medicine.name,
-        startDate: startDate,
-        endDate: endDate,
+        medicineName: medicine.name,
+        startDate: startDate.toISOString(),
+        endDate: endDate.toISOString(),
       }));
 
       setSavedMedicines((prev) => [...prev, ...medicinesWithDates]);
@@ -274,8 +303,9 @@ export default function LongTermMedicine() {
         저장하기
       </button>
 
-      <MedRef savedMedicines={savedMedicines} />
-
+      <div style={{ maxHeight: "300px", overflowY: "auto" }} className="mb-20">
+        <MedRef savedMedicines={savedMedicines} />
+      </div>
       <button
         onClick={() => navigate("/long-check-medicines")}
         className="w-full p-4 bg-blue-600 text-white rounded-lg fixed bottom-4 left-0 mx-4 max-w-[calc(100%-32px)]"
