@@ -104,22 +104,20 @@ export default function ShortTermMedicine() {
 
   const handleSave = () => {
     if (selectedMedicines.length > 0) {
-      const medicinesWithDates = selectedMedicines.map((medicine) => ({
-        ...medicine,
-        // startDate: startDate,
-        // endDate: endDate,
-      }));
-      const newMedicine = {
-        name: searchText,
-        // startDate: startDate,
-        // endDate: endDate,
-      };
+      const currentDateTime = new Date();
 
-      setSavedMedicines([
-        ...savedMedicines,
-        // newMedicine,
-        ...medicinesWithDates,
-      ]);
+      const medicinesWithDates = selectedMedicines.map((medicine) => {
+        const { id, name, ...rest } = medicine;
+        return {
+          medicineName: name,
+          startDate: currentDateTime.toISOString(),
+          endDate: currentDateTime.toISOString(),
+        };
+      });
+      console.log("Medicines with dates:", medicinesWithDates);
+      console.log("Current saved medicines:", savedMedicines);
+
+      setSavedMedicines([...savedMedicines, ...medicinesWithDates]);
       setSearchText("");
       setSelectedMedicines([]);
     }
@@ -225,7 +223,11 @@ export default function ShortTermMedicine() {
       <MedRefShort savedMedicines={savedMedicines} />
       {/* 검사하기 버튼 */}
       <button
-        onClick={() => navigate("/short-check-medicines")}
+        onClick={() =>
+          navigate("/short-check-medicines", {
+            state: { savedMedicines },
+          })
+        }
         className="w-full p-4 bg-blue-600 text-white rounded-lg fixed bottom-4 left-0 mx-4 max-w-[calc(100%-32px)]"
       >
         검사하기
