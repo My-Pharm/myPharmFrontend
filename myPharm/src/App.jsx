@@ -1,4 +1,3 @@
-// App.jsx
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "./App.css";
 import Main from "./pages/Main";
@@ -10,6 +9,16 @@ import ShortTermMedicine from "./pages/ShortSelect";
 import LongChechkMedicines from "./pages/LongChechkMedicines";
 import ShortChechkMedicines from "./pages/ShortCheckMedicines";
 import Header from "./components/Header";
+import { useLocation } from "react-router-dom";
+
+// Wrapper 컴포넌트 추가
+function ShortCheckMedicinesWrapper() {
+  const location = useLocation();
+  const savedMedicines = location.state?.savedMedicines || [];
+
+  return <ShortChechkMedicines medicines={savedMedicines} />;
+}
+
 function App() {
   function setScreenSize() {
     let vh = window.innerHeight * 0.01;
@@ -18,20 +27,19 @@ function App() {
   useEffect(() => {
     setScreenSize();
   });
+
   return (
     <BrowserRouter>
       {/* <Header /> */}
       <Routes>
         <Route path="/" element={<Main />} />
         <Route path="/select-type" element={<SelectType />} />
-
         <Route path="/short-select" element={<ShortTermMedicine />} />
-
         <Route path="/long-select" element={<LongTermMedicine />} />
         <Route path="/long-check-medicines" element={<LongChechkMedicines />} />
         <Route
           path="/short-check-medicines"
-          element={<ShortChechkMedicines />}
+          element={<ShortCheckMedicinesWrapper />}
         />
       </Routes>
     </BrowserRouter>
