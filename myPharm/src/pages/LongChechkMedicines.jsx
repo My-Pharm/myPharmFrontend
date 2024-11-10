@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.css";
-import Table from "react-bootstrap/Table";
-
-function LongCheckMedicines() {
+import { Card, Table, Alert } from 'react-bootstrap'; // react-bootstrap 컴포넌트 import
+export default function LongCheckMedicines() {
   const [alerts, setAlerts] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
   const API_BASE_URL = "http://localhost:8080";
   const ACCESS_TOKEN = "eyJ0eXBlIjoiYWNjZXNzIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjM3ODUyNTY0NjksImlhdCI6MTczMTE3MTY1OSwiZXhwIjoxNzMxNzc2NDU5fQ.HjXkr1XHjQbMgc2Sqjv1m6J94NjUO88vPlOJGkrYXDM";
   //const ACCESS_TOKEN = localStorage.getItem('accessToken');
@@ -62,37 +62,45 @@ function LongCheckMedicines() {
         }
       } catch (error) {
         console.error("Error fetching alerts:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
     fetchData();
   }, []);
+  if (isLoading) {
+    return <div>Loading...</div>; // 로딩 중일 때
+  }
 
   return (
-    <div>
+    <div className="space-y-6">
       {Object.keys(alerts).map((type) => (
-        <div key={type} className="my-4">
-          <h4>{type}</h4>
-          <Table striped bordered hover>
-            <thead>
-              <tr>
-                <th>Medicine Name</th>
-                <th>Contents</th>
-              </tr>
-            </thead>
-            <tbody>
-              {alerts[type].map((alert, index) => (
-                <tr key={index}>
-                  <td>{alert.medicineName}</td>
-                  <td>{alert.contents}</td>
+        <Card key={type}>
+          <Card.Header>
+            <Card.Title>{type}</Card.Title>
+            {/* <Card.Text>Medicine alerts and interactions</Card.Text> */}
+          </Card.Header>
+          <Card.Body>
+            <Table striped bordered hover>
+              <thead>
+                <tr>
+                <th style={{ width: "200px" }}>Medicine Name</th>
+                <th style={{ width: "300px" }}>Contents</th>
                 </tr>
-              ))}
-            </tbody>
-          </Table>
-        </div>
+              </thead>
+              <tbody>
+                {alerts[type].map((alert, index) => (
+                  <tr key={index}>
+                    <td>{alert.medicineName}</td>
+                    <td>{alert.contents}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </Card.Body>
+        </Card>
       ))}
     </div>
   );
 }
-
-export default LongCheckMedicines;
