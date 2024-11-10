@@ -1,9 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import "@fortawesome/fontawesome-free/css/all.min.css";
 
 export default function SelectType() {
   const [userName, setUserName] = useState("");
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const link = document.createElement("link");
+    link.href = "https://fonts.googleapis.com/css2?family=Gowun+Batang&display=swap";
+    link.rel = "stylesheet";
+    document.head.appendChild(link);
+
+    return () => {
+      document.head.removeChild(link);
+    };
+  }, []);
 
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken");
@@ -38,16 +50,17 @@ export default function SelectType() {
     }
   };
 
+  const containerStyle = {
+    fontFamily: "'Gowun Batang', serif",
+    backgroundColor: "#BFDBFE",
+    color: "#374151",
+    display: "flex",
+    flexDirection: "column",
+    minHeight: "100vh",
+  };
+
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        backgroundColor: "#BFDBFE",
-        fontFamily: "'Gowun Batang', serif",
-      }}
-    >
+    <div style={containerStyle}>
       <header
         style={{
           backgroundColor: "#ffffff",
@@ -59,7 +72,7 @@ export default function SelectType() {
         }}
       >
         <span style={{ fontSize: "18px", fontWeight: "bold" }}>
-          {userName ? `${userName}님` : "사용자님"}
+          {userName ? `안녕하세요 ${userName}님!` : "사용자님"}
         </span>
         <button
           style={{
@@ -67,9 +80,10 @@ export default function SelectType() {
             borderRadius: "50%",
             cursor: "pointer",
             backgroundColor: "#f9f9f9",
+            border: "none",
           }}
         >
-          ≡
+          <i className="fas fa-list" style={{ color: "#333" }}></i>
         </button>
       </header>
 
@@ -89,70 +103,83 @@ export default function SelectType() {
             padding: "20px",
             backgroundColor: "#ffffff",
             borderRadius: "8px",
-            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
             textAlign: "center",
           }}
         >
+          <div style={{ display: "flex", alignItems: "center", marginBottom: "20px" }}>
+            <i className="fas fa-shield-alt" style={{ color: "#4CAF50", marginRight: "10px", fontSize: "24px" }}></i>
+            <p style={{ fontSize: "16px", color: "#374151", fontWeight: "bold", margin: 0 }}>
+              복용중인 약이 안전한지 확인할 수 있어요!
+            </p>
+          </div>
           <button
             onClick={() => navigate("/select-type")}
             style={{
               width: "100%",
-              height: "70px",
+              padding: "30px 20px", // 세로 길이 증가
               marginBottom: "20px",
               borderRadius: "8px",
-              backgroundColor: "#3B82F6",
-              color: "#ffffff",
-              fontSize: "16px",
+              backgroundColor: "#E0F2FF",
+              color: "#374151",
+              fontSize: "18px",
               fontWeight: "bold",
               cursor: "pointer",
               border: "none",
               transition: "background-color 0.3s ease",
+              display: "flex", // 아이콘과 텍스트를 가로로 정렬
+              justifyContent: "space-between",
+              alignItems: "center",
+              textAlign: "left", // 텍스트 왼쪽 정렬
             }}
-            onMouseOver={(e) => (e.target.style.backgroundColor = "#2563EB")}
-            onMouseOut={(e) => (e.target.style.backgroundColor = "#3B82F6")}
           >
-            내약 조회
+            마이팜
+            <i className="fas fa-chevron-right" style={{ color: "#374151" }}></i> {/* 오른쪽 화살표 아이콘 */}
           </button>
-          <div style={{ display: "flex", gap: "10px" }}>
-            <button
-              onClick={() => navigate("/short-select")}
-              style={{
-                flex: "1",
-                height: "120px",
-                borderRadius: "8px",
-                backgroundColor: "#3B82F6",
-                color: "#ffffff",
-                fontSize: "16px",
-                fontWeight: "bold",
-                cursor: "pointer",
-                border: "none",
-                transition: "background-color 0.3s ease",
-              }}
-              onMouseOver={(e) => (e.target.style.backgroundColor = "#2563EB")}
-              onMouseOut={(e) => (e.target.style.backgroundColor = "#3B82F6")}
-            >
-              이거 같이 먹어도 되나요(단발)
-            </button>
-            <button
-              onClick={() => navigate("/long-select")}
-              style={{
-                flex: "1",
-                height: "120px",
-                borderRadius: "8px",
-                backgroundColor: "#3B82F6",
-                color: "#ffffff",
-                fontSize: "16px",
-                fontWeight: "bold",
-                cursor: "pointer",
-                border: "none",
-                transition: "background-color 0.3s ease",
-              }}
-              onMouseOver={(e) => (e.target.style.backgroundColor = "#2563EB")}
-              onMouseOut={(e) => (e.target.style.backgroundColor = "#3B82F6")}
-            >
-              장기
-            </button>
-          </div>
+          <button
+            onClick={() => navigate("/short-select")}
+            style={{
+              width: "100%",
+              padding: "30px 20px",
+              marginBottom: "20px",
+              borderRadius: "8px",
+              backgroundColor: "#E0F2FF",
+              color: "#374151",
+              fontSize: "18px",
+              fontWeight: "bold",
+              cursor: "pointer",
+              border: "none",
+              transition: "background-color 0.3s ease",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              textAlign: "left",
+            }}
+          >
+            이 약 먹어도되나요?
+            <i className="fas fa-chevron-right" style={{ color: "#374151" }}></i>
+          </button>
+          <button
+            onClick={() => navigate("/long-select")}
+            style={{
+              width: "100%",
+              padding: "30px 20px",
+              borderRadius: "8px",
+              backgroundColor: "#E0F2FF",
+              color: "#374151",
+              fontSize: "18px",
+              fontWeight: "bold",
+              cursor: "pointer",
+              border: "none",
+              transition: "background-color 0.3s ease",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              textAlign: "left",
+            }}
+          >
+            새로운 장기복용약을 처방받았어요!
+            <i className="fas fa-chevron-right" style={{ color: "#374151" }}></i>
+          </button>
         </div>
       </div>
     </div>

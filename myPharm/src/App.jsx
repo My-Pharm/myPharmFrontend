@@ -10,6 +10,7 @@ import LongChechkMedicines from "./pages/LongChechkMedicines";
 import ShortChechkMedicines from "./pages/ShortCheckMedicines";
 import Header from "./components/Header";
 import { useLocation } from "react-router-dom";
+import KakaoLoginSuccess from "./pages/KakaoLoginSuccess"; 
 
 // Wrapper 컴포넌트 추가
 function ShortCheckMedicinesWrapper() {
@@ -41,6 +42,7 @@ function App() {
           path="/short-check-medicines"
           element={<ShortCheckMedicinesWrapper />}
         />
+         <Route path="/login/success" element={<KakaoLoginSuccess />} /> 
       </Routes>
     </BrowserRouter>
   );
