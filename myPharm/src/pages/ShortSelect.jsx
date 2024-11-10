@@ -9,6 +9,10 @@ import Header from "../components/Header";
 import MedRef from "../components/ui/MedRefLong.jsx";
 import MedRefShort from "../components/ui/MedRefShort.jsx";
 
+const API_BASE_URL = "http://localhost:8080";
+const ACCESS_TOKEN =
+  "eyJ0eXBlIjoiYWNjZXNzIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjM3ODUyNTY0NjksImlhdCI6MTczMTE3MTY1OSwiZXhwIjoxNzMxNzc2NDU5fQ.HjXkr1XHjQbMgc2Sqjv1m6J94NjUO88vPlOJGkrYXDM";
+
 export default function ShortTermMedicine() {
   // const [data, setData] = useState([]); //데이터 저장할곳
   const [searchText, setSearchText] = useState(""); //검색어
@@ -16,38 +20,86 @@ export default function ShortTermMedicine() {
   //   const [endDate, setEndDate] = useState(new Date());
   const [savedMedicines, setSavedMedicines] = useState([]);
   const [searchResults, setSearchResults] = useState([]); //검색결과저장
-  const [allMedicines] = useState([
-    { id: 1, name: "타이레놀" },
-    { id: 2, name: "아스피린" },
-    { id: 3, name: "부루펜" },
-    { id: 4, name: "게보린" },
-    { id: 5, name: "판콜에이" },
-    { id: 6, name: "아스피린2" },
-  ]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  // 약품 검색 API 호출 함수
+  const searchMedicines = async (searchText) => {
+    if (!searchText.trim()) {
+      setError("검색어를 입력해주세요");
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      console.log("Searching for:", searchText);
+
+      const response = await fetch(
+        `${API_BASE_URL}/medicine/search?medicineName=${encodeURIComponent(
+          searchText
+        )}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            Authorization: `Bearer ${ACCESS_TOKEN}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`API 오류: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log("API Response:", data);
+
+      // API 응답 형식에 따라 데이터 처리
+      let formattedResults;
+      if (Array.isArray(data)) {
+        formattedResults = data.map((item, index) => ({
+          id: index + 1,
+          name: item.medicineName || item.name,
+        }));
+      } else if (data.medicineName) {
+        formattedResults = [
+          {
+            id: 1,
+            name: data.medicineName,
+          },
+        ];
+      } else {
+        formattedResults = [];
+      }
+
+      setSearchResults(formattedResults);
+
+      if (formattedResults.length === 0) {
+        setError("검색 결과가 없습니다");
+      }
+    } catch (err) {
+      console.error("Search error:", err);
+      setError(err.message);
+      setSearchResults([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
   const [selectedMedicines, setSelectedMedicines] = useState([]);
   const navigate = useNavigate();
 
   const handleSearch = () => {
-    if (searchText.trim()) {
-      const filteredResults = allMedicines.filter((medicine) =>
-        medicine.name.toLowerCase().includes(searchText.toLowerCase())
-      );
-      setSearchResults(filteredResults);
-    } else {
-      setSearchResults([]);
-    }
+    searchMedicines(searchText);
   };
 
-  const handleResultClick = (medicineName) => {
-    setSearchText(medicineName);
+  const handleResultClick = (medicine) => {
+    console.log("Selected medicine:", medicine);
+    setSearchText(medicine.name);
     setSearchResults([]);
-
-    const selectedMedicine = allMedicines.find(
-      (medicine) => medicine.name === medicineName
-    );
-    if (selectedMedicine) {
-      handleCheckboxChange(selectedMedicine);
-    }
+    handleCheckboxChange(medicine);
   };
 
   const handleSave = () => {
@@ -132,23 +184,31 @@ export default function ShortTermMedicine() {
         </div>
 
         {/* 검색 결과 및 저장 버튼 */}
-        {searchResults.length > 0 && (
-          <div className="mb-4">
-            <div className="bg-white p-4 rounded-lg shadow mb-2">
-              {searchResults.map((medicine) => (
-                <div
-                  key={medicine.id}
-                  className="mb-2 p-2 border-b last:border-b-0 cursor-pointer"
-                  onClick={() => handleResultClick(medicine.name)}
-                >
-                  <h3 className="font-bold">{medicine.name}</h3>
-                  <p className="text-sm text-gray-600">
-                    {medicine.dosage} - {medicine.period}
-                  </p>
-                </div>
-              ))}
+        {/* 검색 결과 표시 */}
+        {isLoading ? (
+          <div className="text-center p-4">검색 중...</div>
+        ) : (
+          searchResults.length > 0 && (
+            <div className="mb-4">
+              <div
+                className="bg-white p-3 rounded-lg shadow max-h-60 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100"
+                style={{
+                  maxHeight: "240px",
+                  overflowY: "auto",
+                }}
+              >
+                {searchResults.map((medicine) => (
+                  <div
+                    key={medicine.id}
+                    className="mb-2 p-2 border-b last:border-b-0 hover:bg-gray-50 cursor-pointer"
+                    onClick={() => handleResultClick(medicine)}
+                  >
+                    <span className="text-sm font-medium">{medicine.name}</span>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
+          )
         )}
       </section>
 
