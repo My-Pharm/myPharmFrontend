@@ -1,0 +1,41 @@
+.med-ref-container {
+  padding: 20px;
+}
+
+.med-list {
+  list-style: none;
+  padding: 0;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden; /* 둥근 모서리를 위해 필요 */
+}
+
+.med-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px;
+  border-bottom: 1px solid #ddd;
+}
+
+.med-item:last-child {
+  border-bottom: none; /* 마지막 항목의 하단 테두리 제거 */
+}
+
+.med-name {
+  font-weight: bold;
+  width: 30%;
+  padding: 0 10px;
+  border-right: 1px solid #ddd;
+}
+
+.med-desc {
+  width: 30%;
+  padding: 0 10px;
+  border-right: 1px solid #ddd;
+}
+
+.med-dosage {
+  width: 40%;
+  padding: 0 10px;
+  color: #666;
+} 
