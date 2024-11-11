@@ -1,12 +1,51 @@
 import React, { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.css";
 import { Card, Table, Alert } from 'react-bootstrap'; // react-bootstrap 컴포넌트 import
+import { useNavigate } from "react-router-dom";
+import Header from "../components/Header";
 export default function LongCheckMedicines() {
   const [alerts, setAlerts] = useState({});
   const [isLoading, setIsLoading] = useState(true);
+  
+  const navigate = useNavigate();
+  
+  const [userName, setUserName] = useState("");
   const API_BASE_URL = "http://localhost:8080";
-  //const ACCESS_TOKEN = "eyJ0eXBlIjoiYWNjZXNzIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjM3ODUyNTY0NjksImlhdCI6MTczMTE3MTY1OSwiZXhwIjoxNzMxNzc2NDU5fQ.HjXkr1XHjQbMgc2Sqjv1m6J94NjUO88vPlOJGkrYXDM";
   const ACCESS_TOKEN = localStorage.getItem('accessToken');
+
+  useEffect(() => {
+    const accessToken = localStorage.getItem("accessToken");
+
+    if (accessToken) {
+      fetchUserName(accessToken);
+    } else {
+      console.error("No access token found");
+    }
+  }, []);
+
+  const fetchUserName = async (token) => {
+    try {
+      const response = await fetch("http://localhost:8080/userinfo", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.ok) {
+        const userData = await response.json();
+        setUserName(userData.userName);
+      } else if (response.status === 401) {
+        console.error("권한 거부");
+        alert("로그인이 만료되었습니다");
+        navigate("/");
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -108,6 +147,7 @@ export default function LongCheckMedicines() {
           <i className="fas fa-list" style={{ color: "#333" }}></i>
         </button>
       </header>
+      <Header/>
 
       <div
         style={{

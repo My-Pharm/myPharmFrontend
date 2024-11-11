@@ -10,10 +10,7 @@ import MedRef from "../components/ui/MedRefLong.jsx";
 import MedRefShort from "../components/ui/MedRefShort.jsx";
 import "../../src/index.css";
 
-// const API_BASE_URL = "http://localhost:8080";
-// const ACCESS_TOKEN =
-//   "eyJ0eXBlIjoiYWNjZXNzIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjM3ODUyNTY0NjksImlhdCI6MTczMTE3MTY1OSwiZXhwIjoxNzMxNzc2NDU5fQ.HjXkr1XHjQbMgc2Sqjv1m6J94NjUO88vPlOJGkrYXDM";
-  // const ACCESS_TOKEN = localStorage.getItem("accessToken");
+
 export default function ShortTermMedicine() {
   const [searchText, setSearchText] = useState("");
   const [savedMedicines, setSavedMedicines] = useState([]);
@@ -21,6 +18,7 @@ export default function ShortTermMedicine() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [selectedMedicines, setSelectedMedicines] = useState([]);
+  const [userName, setUserName] = useState("");
   const navigate = useNavigate();
   const ACCESS_TOKEN = localStorage.getItem("accessToken");
   const API_BASE_URL = "http://localhost:8080";
@@ -52,6 +50,38 @@ export default function ShortTermMedicine() {
 
     fetchSavedMedicines();
   }, []);
+  useEffect(() => {
+    const accessToken = localStorage.getItem("accessToken");
+
+    if (accessToken) {
+      fetchUserName(accessToken);
+    } else {
+      console.error("No access token found");
+    }
+  }, []);
+
+  const fetchUserName = async (token) => {
+    try {
+      const response = await fetch("http://localhost:8080/userinfo", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.ok) {
+        const userData = await response.json();
+        setUserName(userData.userName);
+      } else if (response.status === 401) {
+        console.error("권한 거부");
+        alert("로그인이 만료되었습니다");
+        navigate("/");
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  };
 
   const searchMedicines = async (searchText) => {
     if (!searchText.trim()) {
@@ -206,10 +236,45 @@ export default function ShortTermMedicine() {
       }
     });
   };
+  const containerStyle = {
+    fontFamily: "'Gowun Batang', serif",
+    backgroundColor: "#BFDBFE",
+    color: "#374151",
+    display: "flex",
+    flexDirection: "column",
+    minHeight: "100vh",
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4" style={{}}>
+    <div style={containerStyle}>
+    
+      <header
+        style={{
+          backgroundColor: "#ffffff",
+          boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+          padding: "16px",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <span style={{ fontSize: "18px", fontWeight: "bold" }}>
+          {userName ? `${userName}님의 복용중인 약물입니다!` : "사용자님"}
+        </span>
+        <button
+          style={{
+            padding: "8px",
+            borderRadius: "50%",
+            cursor: "pointer",
+            backgroundColor: "#f9f9f9",
+            border: "none",
+          }}
+        >
+          <i className="fas fa-list" style={{ color: "#333" }}></i>
+        </button>
+      </header>
       <Header />
+      <div className="min-h-screen bg-gray-50 p-4" style={{}}>
       <section style={{ marginBottom: "24px" }}>
         <div
           style={{
@@ -286,6 +351,8 @@ export default function ShortTermMedicine() {
       >
         저장하기
       </button>
+      <br/>
+      <br/>
 
       <div style={{ maxHeight: "300px", overflowY: "auto" }} className="mb-20">
         <MedRefShort
@@ -310,6 +377,7 @@ export default function ShortTermMedicine() {
       >
         검사하기
       </button>
+    </div>
     </div>
   );
 }
