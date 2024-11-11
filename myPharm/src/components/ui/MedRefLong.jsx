@@ -2,34 +2,35 @@ import React from "react";
 
 const MedRefLong = ({ savedMedicines, onDelete }) => {
   return (
-    <div className="mt-4">
-      <h3 className="text-lg font-semibold mb-2">내가 먹고 있는 약</h3>
-      <div className="space-y-2">
-        {savedMedicines.map((medicine, index) => (
-          <div key={index} className="bg-white p-4 rounded-lg shadow">
-            <div className="flex flex-col items-center gap-2">
-              <span className="font-medium text-lg">
-                {medicine.medicineName}
-              </span>
-              <span className="text-sm text-gray-500">
-                {new Date(medicine.startDate).toLocaleDateString()} ~{" "}
-                {new Date(medicine.endDate).toLocaleDateString()}
-              </span>
-              <button
-                onClick={() => onDelete(medicine)}
-                className="w-6 h-6 flex items-center justify-center rounded-full bg-white hover:bg-gray-50 border-none p-0"
-                style={{
-                  color: "#12273d",
-                  minWidth: "auto",
-                  boxShadow: "none",
-                }}
-              >
-                ×
-              </button>
+    <div className="space-y-2">
+      {savedMedicines.map((medicine, index) => (
+        <div key={index} className="bg-white p-4 rounded-lg shadow-sm relative">
+          {/* Medicine 정보 컨테이너 */}
+          <div>
+            <div className="text-sm font-medium">{medicine.medicineName}</div>
+            <div className="text-xs text-gray-500">
+              {new Date(medicine.startDate).toLocaleDateString()} ~{" "}
+              {new Date(medicine.endDate).toLocaleDateString()}
             </div>
           </div>
-        ))}
-      </div>
+
+          {/* x 버튼을 오른쪽 상하 가운데에 위치시킴 */}
+          <button
+            onClick={() => onDelete(medicine)}
+            className="absolute top-1/2 right-4 transform -translate-y-1/2 flex items-center justify-center rounded-full hover:bg-gray-50"
+            style={{
+              color: "white",
+              backgroundColor: "black",
+              borderColor: "black",
+              fontSize: "14px", // 텍스트 크기 조정
+              padding: "6px 12px", // 버튼 패딩 조정
+              minWidth: "auto",
+            }}
+          >
+            삭제하기
+          </button>
+        </div>
+      ))}
     </div>
   );
 };
