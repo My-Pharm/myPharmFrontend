@@ -36,7 +36,7 @@ export default function Header() {
         }}
         className="font-semibold flex-1 text-right"
       >
-        검사하기
+        뒤로가기
       </h1>
       <div className="w-8"></div>
     </header>
