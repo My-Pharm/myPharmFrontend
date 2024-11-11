@@ -9,8 +9,8 @@ import Header from "../components/Header";
 import MedRef from "../components/ui/MedRefLong.jsx";
 
 const API_BASE_URL = "http://localhost:8080";
-const ACCESS_TOKEN =
-  "eyJ0eXBlIjoiYWNjZXNzIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjM3ODUyNTY0NjksImlhdCI6MTczMTE3MTY1OSwiZXhwIjoxNzMxNzc2NDU5fQ.HjXkr1XHjQbMgc2Sqjv1m6J94NjUO88vPlOJGkrYXDM";
+// const ACCESS_TOKEN =
+//   "eyJ0eXBlIjoiYWNjZXNzIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjM3ODUyNTY0NjksImlhdCI6MTczMTE3MTY1OSwiZXhwIjoxNzMxNzc2NDU5fQ.HjXkr1XHjQbMgc2Sqjv1m6J94NjUO88vPlOJGkrYXDM";
 
 export default function LongTermMedicine() {
   const [searchText, setSearchText] = useState("");
@@ -23,6 +23,7 @@ export default function LongTermMedicine() {
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const ACCESS_TOKEN = localStorage.getItem('accessToken');
 
   // 저장된 약품 목록 가져오기
   useEffect(() => {

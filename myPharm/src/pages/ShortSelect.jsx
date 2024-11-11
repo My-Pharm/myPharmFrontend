@@ -10,10 +10,10 @@ import MedRef from "../components/ui/MedRefLong.jsx";
 import MedRefShort from "../components/ui/MedRefShort.jsx";
 import "../../src/index.css";
 
-const API_BASE_URL = "http://localhost:8080";
-const ACCESS_TOKEN =
-  "eyJ0eXBlIjoiYWNjZXNzIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjM3ODUyNTY0NjksImlhdCI6MTczMTE3MTY1OSwiZXhwIjoxNzMxNzc2NDU5fQ.HjXkr1XHjQbMgc2Sqjv1m6J94NjUO88vPlOJGkrYXDM";
-
+// const API_BASE_URL = "http://localhost:8080";
+// const ACCESS_TOKEN =
+//   "eyJ0eXBlIjoiYWNjZXNzIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjM3ODUyNTY0NjksImlhdCI6MTczMTE3MTY1OSwiZXhwIjoxNzMxNzc2NDU5fQ.HjXkr1XHjQbMgc2Sqjv1m6J94NjUO88vPlOJGkrYXDM";
+  // const ACCESS_TOKEN = localStorage.getItem("accessToken");
 export default function ShortTermMedicine() {
   const [searchText, setSearchText] = useState("");
   const [savedMedicines, setSavedMedicines] = useState([]);
@@ -22,6 +22,8 @@ export default function ShortTermMedicine() {
   const [error, setError] = useState(null);
   const [selectedMedicines, setSelectedMedicines] = useState([]);
   const navigate = useNavigate();
+  const ACCESS_TOKEN = localStorage.getItem("accessToken");
+  const API_BASE_URL = "http://localhost:8080";
 
   useEffect(() => {
     const fetchSavedMedicines = async () => {
