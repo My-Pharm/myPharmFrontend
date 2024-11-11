@@ -10,7 +10,7 @@ export default function LongCheckMedicines() {
   const navigate = useNavigate();
   
   const [userName, setUserName] = useState("");
-  const API_BASE_URL = "http://localhost:8080";
+  const API_BASE_URL = "http://51.21.23.40/api";
   const ACCESS_TOKEN = localStorage.getItem('accessToken');
 
   useEffect(() => {
@@ -25,7 +25,7 @@ export default function LongCheckMedicines() {
 
   const fetchUserName = async (token) => {
     try {
-      const response = await fetch("http://localhost:8080/userinfo", {
+      const response = await fetch("http://51.21.23.40/api/userinfo", {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -73,19 +73,16 @@ export default function LongCheckMedicines() {
           const data2 = await response2.json();
           const combinedData = [...data1, ...data2];
 
-          // Group data by typeName, and keep the entry with the longest contents if medicine_name and type_name are the same
           const groupedAlerts = combinedData.reduce((acc, item) => {
             const { typeName, medicineName, contents } = item;
             const key = `${medicineName}-${typeName}`;
 
-            // Check if the medicine and typeName combination already exists
             if (!acc[key] || acc[key].contents.length < contents.length) {
-              acc[key] = item; // Keep the entry with the longest contents
+              acc[key] = item; 
             }
             return acc;
           }, {});
 
-          // Transform groupedAlerts back into the desired format, grouped by typeName
           const formattedAlerts = Object.values(groupedAlerts).reduce((acc, item) => {
             const { typeName } = item;
             if (!acc[typeName]) {

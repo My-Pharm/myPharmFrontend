@@ -33,7 +33,7 @@ export default function KakaoLogin() {
   const handleKakaoLogin = () => {
     if (window.Kakao && window.Kakao.isInitialized()) {
       window.Kakao.Auth.authorize({
-        redirectUri: 'http://localhost:8080/login/auth'
+        redirectUri: 'http:///51.21.23.40/api/login/auth'
       });
     } else {
       console.error('Kakao SDK가 초기화되지 않았습니다.');

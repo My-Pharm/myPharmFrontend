@@ -8,7 +8,7 @@ import { Button } from "../components/ui/button";
 import Header from "../components/Header";
 import MedRef from "../components/ui/MedRefLong.jsx";
 
-const API_BASE_URL = "http://localhost:8080";
+const API_BASE_URL = "http:///51.21.23.40/api";
 // const ACCESS_TOKEN =
 //   "eyJ0eXBlIjoiYWNjZXNzIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjM3ODUyNTY0NjksImlhdCI6MTczMTE3MTY1OSwiZXhwIjoxNzMxNzc2NDU5fQ.HjXkr1XHjQbMgc2Sqjv1m6J94NjUO88vPlOJGkrYXDM";
 
@@ -56,7 +56,7 @@ export default function LongTermMedicine() {
   }, []);
   const fetchUserName = async (token) => {
     try {
-      const response = await fetch("http://localhost:8080/userinfo", {
+      const response = await fetch("http:///51.21.23.40/api/userinfo", {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,

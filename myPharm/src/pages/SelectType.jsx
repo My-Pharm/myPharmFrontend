@@ -29,7 +29,7 @@ export default function SelectType() {
 
   const fetchUserName = async (token) => {
     try {
-      const response = await fetch("http://localhost:8080/userinfo", {
+      const response = await fetch("http:///51.21.23.40/api/userinfo", {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -116,7 +116,7 @@ export default function SelectType() {
             onClick={() => navigate("/select-type")}
             style={{
               width: "100%",
-              padding: "30px 20px", // 세로 길이 증가
+              padding: "30px 20px", 
               marginBottom: "20px",
               borderRadius: "8px",
               backgroundColor: "#E0F2FF",
@@ -126,14 +126,14 @@ export default function SelectType() {
               cursor: "pointer",
               border: "none",
               transition: "background-color 0.3s ease",
-              display: "flex", // 아이콘과 텍스트를 가로로 정렬
+              display: "flex", 
               justifyContent: "space-between",
               alignItems: "center",
-              textAlign: "left", // 텍스트 왼쪽 정렬
+              textAlign: "left", 
             }}
           >
             마이팜
-            <i className="fas fa-chevron-right" style={{ color: "#374151" }}></i> {/* 오른쪽 화살표 아이콘 */}
+            <i className="fas fa-chevron-right" style={{ color: "#374151" }}></i> 
           </button>
           <button
             onClick={() => navigate("/short-select")}

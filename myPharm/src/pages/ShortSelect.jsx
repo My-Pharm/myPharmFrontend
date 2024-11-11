@@ -21,7 +21,7 @@ export default function ShortTermMedicine() {
   const [userName, setUserName] = useState("");
   const navigate = useNavigate();
   const ACCESS_TOKEN = localStorage.getItem("accessToken");
-  const API_BASE_URL = "http://localhost:8080";
+  const API_BASE_URL = "http:///51.21.23.40/api";
 
   useEffect(() => {
     const fetchSavedMedicines = async () => {
@@ -62,7 +62,7 @@ export default function ShortTermMedicine() {
 
   const fetchUserName = async (token) => {
     try {
-      const response = await fetch("http://localhost:8080/userinfo", {
+      const response = await fetch("http:///51.21.23.40/api/userinfo", {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
