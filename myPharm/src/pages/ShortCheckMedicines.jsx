@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Alert } from 'react-bootstrap';
 import "@fortawesome/fontawesome-free/css/all.min.css";
+import Header from "../components/Header";
 
 export default function ShortCheckMedicines({ medicines }) {
   const [alerts, setAlerts] = useState({});
@@ -169,6 +170,7 @@ export default function ShortCheckMedicines({ medicines }) {
           <i className="fas fa-list" style={{ color: "#333" }}></i>
         </button>
       </header>
+      <Header/>
 
       <div
         style={{
