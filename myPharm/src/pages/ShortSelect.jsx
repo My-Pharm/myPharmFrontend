@@ -155,7 +155,15 @@ export default function ShortTermMedicine() {
     console.log("Selected medicine:", medicine);
     setSearchText(medicine.name);
     setSearchResults([]);
-    handleCheckboxChange(medicine);
+    // handleCheckboxChange(medicine);
+    // 클릭한 약을 selectedMedicines에 추가하되 중복 방지
+    setSelectedMedicines((prev) => {
+      const isAlreadySelected = prev.some((item) => item.id === medicine.id);
+      if (!isAlreadySelected) {
+        return [...prev, medicine];
+      }
+      return prev;
+    });
   };
 
   // 수정된 handleDelete 함수
@@ -355,16 +363,7 @@ export default function ShortTermMedicine() {
       <br/>
 
       <div style={{ maxHeight: "300px", overflowY: "auto" }} className="mb-20">
-        <MedRefShort
-          savedMedicines={[
-            ...savedMedicines,
-            ...selectedMedicines.map((medicine) => ({
-              medicineName: medicine.name,
-              isNew: true,
-            })),
-          ]}
-          onDelete={handleDelete}
-        />
+        <MedRefShort savedMedicines={savedMedicines} onDelete={handleDelete} />
       </div>
 
       <button
